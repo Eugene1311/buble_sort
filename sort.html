@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<script src="js/jquery.js"></script>
+	<title>test</title>
+	<style>
+		table {
+			display: inline-block;
+			vertical-align: top;
+			margin-right: 100px;
+		}
+		table td {
+			padding: 0 10px 0 5px;
+			position: relative;
+		}
+		table td span {
+			//position: absolute;
+		}
+		#result {
+			display: inline-block;
+			vertical-align: top;
+			width:40px;
+			position: relative;
+		}
+		#result>div {
+			border: 1px solid black;
+			width: 30px;
+			text-align: center;
+			position: absolute;
+		}
+	</style>
+</head>
+<body>
+	<table celpadding="5" cellspacing="0" border="1px">
+		<tbody id="sourceTable"></tbody>
+	</table>
+<!--
+	<table celpadding="5" cellspacing="0" border="1px">
+		<tbody id="resultTable"></tbody>
+	</table>
+-->
+	<div id="result">
+		
+	</div>
+	<script>
+		var count,
+			m = [9, 11, 12, 3, 19, 1, 5, 17, 10, 18, 3, 19, 17, 9, 12, 20, 20, 19, 2, 5],
+			$sourceTable = $('#sourceTable');
+		$('body').prepend('<p>Исходный массив:</p>');
+		count = m.length;
+		for (var i=0; i < count; i++) {
+			$sourceTable.append('<tr><td><span>' + m[i] + '</span></td></tr>');
+			$('#result').append('<div id="'+i+'">' + m[i] + '</div>');
+			var height = $('#'+i+'').height();
+			$('#'+i+'').css('top',i*height);
+		}
+		//$('#resulTable').html($sourceTable.html());
+		/*Линейная сортировка по невозрастанию*/
+//		for (var i=0; i < count-1; i++) {
+//			for (var j=i+1; j < count; j++) {
+//				if (m[i]<m[j]) {
+//					var n = m[i];
+//					m[i] = m[j];
+//					m[j] = n;
+//				}
+//			}
+//		}
+//		for (var i=0; i < count; i++) {
+//			document.write(' ' + m[i]);
+//		}
+//		document.writeln('<br>');
+		/*Сортировка пузырьком по возрастанию*/
+		for(var i=0; i < count; i++) { 				// i - номер прохода
+			for(var j = count-1; j > i; j-- ) { 	// внутренний цикл прохода
+				if ( m[j-1] > m[j] ) {
+					var biggerVal = $('#' +(j-1)+ '').text();
+					var smallerVal = $('#' +j+ '').text();
+//					console.log($('#' +(j-1)+ ''));
+					$('#' +(j-1)+ '').fadeOut(1000)
+									.text(smallerVal)
+									.fadeIn(1000);
+//					$('#' +j+ '').fadeOut('slow')
+//								.text(biggerVal)
+//								.fadeIn('slow');
+					$('#' +(j-1)+ '').text(smallerVal);
+					$('#' +j+ '').text(biggerVal);
+					//console.log(biggerVal+'  '+smallerVal+'  '+i);
+					x=m[j-1];
+					m[j-1]=m[j];
+					m[j]=x;
+				}
+			}
+		}
+		for (var i=0; i < count; i++) {
+			document.write(' ' + m[i]);
+		}
+	</script>
+</body>
+</html>
