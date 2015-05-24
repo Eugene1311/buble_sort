@@ -24,10 +24,32 @@
 			position: relative;
 		}
 		#result>div {
-			border: 1px solid black;
 			width: 30px;
 			text-align: center;
 			position: absolute;
+			height: 30px;
+			border-radius: 50%;
+			padding-top: 6px;
+			box-sizing: border-box;
+			background: rgb(112, 191, 242);
+			color: rgb(15, 15, 15);
+			
+		}
+		#result>div.active:after {
+			content: '';
+			display: block;
+			width:0;
+			height: 0;
+			position: absolute;
+			top: -15px;
+			left: 10px;
+			border-left: 5px solid transparent;
+    		border-top: 10px solid grey;
+    		border-right: 5px solid transparent;
+		}
+		#result .active {
+			background-color: rgb(244, 86, 136);
+			color: white;
 		}
 	</style>
 </head>
@@ -46,16 +68,16 @@
 	<script>
 		var count,
 			m = [9, 11, 12, 3, 19, 1, 5, 17, 10, 18, 3, 19, 17, 9, 12, 20, 20, 19, 2, 5],
+			//m = [5, 3, 1],
 			$sourceTable = $('#sourceTable');
 		$('body').prepend('<p>Исходный массив:</p>');
 		count = m.length;
 		for (var i=0; i < count; i++) {
 			$sourceTable.append('<tr><td><span>' + m[i] + '</span></td></tr>');
 			$('#result').append('<div id="'+i+'">' + m[i] + '</div>');
-			var height = $('#'+i+'').height();
-			$('#'+i+'').css('top',i*height);
+			var width = $('#'+i+'').width() + 10;
+			$('#'+i+'').css('left',i*width);
 		}
-		//$('#resulTable').html($sourceTable.html());
 		/*Линейная сортировка по невозрастанию*/
 //		for (var i=0; i < count-1; i++) {
 //			for (var j=i+1; j < count; j++) {
@@ -71,30 +93,108 @@
 //		}
 //		document.writeln('<br>');
 		/*Сортировка пузырьком по возрастанию*/
-		for(var i=0; i < count; i++) { 				// i - номер прохода
-			for(var j = count-1; j > i; j-- ) { 	// внутренний цикл прохода
-				if ( m[j-1] > m[j] ) {
-					var biggerVal = $('#' +(j-1)+ '').text();
-					var smallerVal = $('#' +j+ '').text();
-//					console.log($('#' +(j-1)+ ''));
-					$('#' +(j-1)+ '').fadeOut(1000)
-									.text(smallerVal)
-									.fadeIn(1000);
-//					$('#' +j+ '').fadeOut('slow')
-//								.text(biggerVal)
-//								.fadeIn('slow');
-					$('#' +(j-1)+ '').text(smallerVal);
-					$('#' +j+ '').text(biggerVal);
-					//console.log(biggerVal+'  '+smallerVal+'  '+i);
-					x=m[j-1];
-					m[j-1]=m[j];
-					m[j]=x;
-				}
-			}
-		}
-		for (var i=0; i < count; i++) {
-			document.write(' ' + m[i]);
-		}
+		var elements = $('#result div'),
+			endIndex;
+		function runAnimation() {
+            endIndex = elements.length - 1;
+            startInterval();
+        }
+		function startInterval() {
+            var intervalCount = 0,
+				interval = setInterval(function() {
+					doSwap(intervalCount);
+					intervalCount++;
+					if(intervalCount >= endIndex) displaySummary(interval);
+				}, 1000);
+        }
+		function doSwap(index) {
+//            if (index > 0) {
+//                $(elements[index]).removeClass('active');
+//				$(elements[index+1]).removeClass('active');
+//            }
+//
+//            tds[index].className += " selected";
+			$(elements).removeClass('active');
+            if (endIndex > 0) {
+				$(elements[index]).addClass('active');
+				$(elements[index+1]).addClass('active');
+            	var currentValue = parseFloat(elements[index].innerHTML),
+            		nextValue = parseFloat(elements[index + 1].innerHTML),
+					x = elements[index];
+                if (currentValue > nextValue) {
+                    $(elements[index]).animate({
+							left: '+='+width
+						}, 1000);
+					$(elements[index+1]).animate({
+							left: '-='+width
+						}, 1000);
+					elements[index] = elements[index + 1];
+					elements[index + 1] = x;
+					
+                }
+				
+            }
+        }
+		function displaySummary(interval) {
+            clearInterval(interval);
+
+            if (endIndex > 0) {
+                startInterval();
+            }
+            endIndex--;
+//            if(endIndex<0) {
+//                var td=$('td');
+//                for(i=0; i<td.length; i++) {
+//                    var hz=td[i];
+//                     if(hz.hasClass('selected')) {
+//                         hz.removeClass('selected');
+//                     }
+//                }
+//            }
+        }
+		runAnimation();
+//		function changeState(j) {
+//			//$('#result>div').css('background', 'white');
+//			$('#' +j+ '').css('background', 'green');
+//			pause(1000);
+//			console.log(j);
+//		}
+//		function pause(n){
+//			today=new Date();
+//			today2=today;
+//			while((today2-today)<=n){
+//				today2=new Date();
+//			}
+//		}
+//		for(var i=0; i < count; i++) { 				// i - номер прохода
+//			
+//			for(var j = count-1; j > i; j-- ) {
+//					//var interval = setInterval(changeState(j), 1000);
+//					//clearInterval(interval);
+//					var z = $('#' +j+ '').attr('id'),
+//					y = $('#' +(j-1)+ '').attr('id');
+//					var nextVal = parseInt($('#' +(j-1)+ '').text());
+//					var currentVal = parseInt($('#' +j+ '').text());
+//					if (nextVal>currentVal) {
+//						
+//						$('#' +(j-1)+ '').animate({
+//							top: '+=20px'
+//						}, 1000);
+//						$('#' +j+ '').animate({
+//								top: '-=20px'
+//							}, 1000);
+//						$('#' +j+ '').attr('id', y);
+//						$('#' +(j-1)+ '').attr('id', z);
+//						
+//						m[j] = nextVal;
+//						m[j-1] = currentVal;
+//					}
+//			}
+//		}
+		
+//		for (var i=0; i < count; i++) {
+//			document.write(' ' + m[i]);
+//		}
 	</script>
 </body>
 </html>
